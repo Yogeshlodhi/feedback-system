@@ -19,7 +19,8 @@ class UserCreate(UserBase):
 
 class TokenResponse(SQLModel):
     access_token: str
-    token_type: str
+    # token_type: str
+    user: UserBase
     
 class LoginRequest(BaseModel):
     email: str

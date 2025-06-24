@@ -51,7 +51,7 @@ def signup(user_in: UserCreate, session: Session = Depends(get_session)):
     # This function should create a JWT token with the user's ID and role
     access_token = create_access_token(data={"sub": str(new_user.id), "role": new_user.role})
     
-    return TokenResponse(access_token=access_token, token_type="bearer")
+    return TokenResponse(access_token=access_token, user=new_user)
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -70,7 +70,8 @@ def login(user_in: LoginRequest, session: Session = Depends(get_session)):
         )
 
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
-    return TokenResponse(access_token=access_token, token_type="bearer")
+    # return TokenResponse(access_token=access_token, token_type="bearer")
+    return TokenResponse(access_token=access_token, user=user)
 
 # @router.post("/login", response_model=TokenResponse)
 # def login(user_in: UserCreate, session: Session = Depends(get_session)):

@@ -8,7 +8,8 @@ from schemas.feedback import FeedbackType
 
 
 class Feedback(SQLModel, table=True):
-    id: UUID = Field(default=uuid4, primary_key=True)
+    # id: UUID = Field(default=uuid4, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     
     employee_id: UUID = Field(foreign_key="user.id", nullable=False)
     manager_id: UUID = Field(foreign_key="user.id", nullable=False)

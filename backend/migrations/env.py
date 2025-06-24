@@ -5,7 +5,7 @@ from sqlmodel import SQLModel
 
 from settings import settings
 
-from models import user, feedback
+from models import user, feedback, team
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
