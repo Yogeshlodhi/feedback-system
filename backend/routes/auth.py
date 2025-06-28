@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from db.session import get_session
 from models.user import User
+from models.team import Team
 from schemas.user import TokenResponse, UserCreate, LoginRequest
 from utils.security import create_access_token, hash_password, verify_password
 
@@ -15,6 +16,22 @@ def health_check():
     This endpoint returns a simple message indicating the service is up and running.
     """
     return {"message": "Service is running"}
+
+@router.get("/get_users", response_model=list[User])
+def get_users(session: Session = Depends(get_session)):
+    """
+    Retrieve all users in the system.
+    This endpoint returns a list of all registered users.
+    """
+    users = session.exec(select(User)).all()
+    return users
+
+
+@router.get("/get_teams", response_model=list[Team])
+def get_teams(session: Session = Depends(get_session)):
+    
+    teams = session.exec(select(Team)).all()
+    return teams
 
 
 @router.post("/signup", response_model=TokenResponse)

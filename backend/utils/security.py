@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from jose import jwt
-
+from typing import Optional
+from jose.exceptions import JWTError
 from settings import settings
 
 from passlib.context import CryptContext
@@ -13,12 +14,12 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# def decode_access_token(token: str) -> Optional[dict]:
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         return payload
-#     except JWTError:
-#         return None
+def decode_access_token(token: str) -> Optional[dict]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
 
 SECRET_KEY = settings.SECRET_KEY  # Replace with your actual secret key
 ALGORITHM = settings.ALGORITHM  # Replace with your desired algorithm

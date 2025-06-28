@@ -34,19 +34,18 @@ const LoginPage: React.FC = () => {
 
       const { access_token, user } = response.data;
 
-      // ...
       login(user, access_token);
 
-      // localStorage.setItem('token', access_token);
-      // localStorage.setItem('user', JSON.stringify(user));
-
-      toast.success('Login successful! Redirecting...');
+      toast.success('Login successful!');
 
       setEmail('');
       setPassword('');
       setError('');
 
       // Redirect to dashboard using navigate
+      // if (user.role === 'manager') {
+      //   navigate('/team');
+      // }
       navigate('/');
 
     } catch (err: any) {

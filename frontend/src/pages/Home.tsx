@@ -1,6 +1,12 @@
+// import { useContext } from 'react'
 import Layout from '../components/Layout'
+// import { AuthContext } from '../context/AuthContext';
+// import Team from './manager/Team';
 
 const Home = () => {
+
+  // const { user } = useContext(AuthContext);
+
   return (
     <Layout>
       <div className="text-center text-2xl font-bold mt-10">
@@ -9,6 +15,7 @@ const Home = () => {
         </div>
       </div>
     </Layout>
+
   )
 }
 

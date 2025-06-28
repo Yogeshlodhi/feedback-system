@@ -27,3 +27,11 @@ class FeedbackRead(FeedbackCreate):
     id: UUID
     manager_id: UUID
     acknowledged: bool
+
+
+class FeedbackCreateRequest(SQLModel):
+    employee_id: UUID
+    strengths: Optional[str]
+    behavior: Optional[str]
+    area_to_improve: Optional[str]
+    feedback_type: FeedbackType  # e.g., POSITIVE, NEGATIVE, NEUTRAL

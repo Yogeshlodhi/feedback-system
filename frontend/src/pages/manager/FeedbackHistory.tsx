@@ -1,5 +1,19 @@
+import axios from "axios";
 import Layout from "../../components/Layout";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+
+const API = import.meta.env.VITE_API_URL;
+
+type FeedbackType = {
+  employee_id?: string; // Optional employee ID
+  employee: string; // Employee name
+  feedback: string; // Feedback text
+  date: string; // Date of feedback
+  status: string; // Status of feedback (e.g., Completed, Pending)
+  // Actions can be buttons or links for editing, deleting, etc.
+  actions?: React.ReactNode; // Optional actions column
+};
 
 const feedbackData = [
   {
@@ -37,8 +51,56 @@ const feedbackData = [
 const FeedbackHistory = () => {
   const [search, setSearch] = useState("");
 
-  const filtered = feedbackData.filter((item) =>
-    item.employee.toLowerCase().includes(search.toLowerCase())
+  const [feedbacks, setFeedbacks] = useState<FeedbackType[]>();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+
+    const getFeedbacks = async () => {
+      try {
+        const response = await axios.get(
+          `${API}/feedback/submitted`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = response.data;
+
+        // Map the response to the feedbackData structure
+        const formattedData = data.map((item: any) => ({
+          employee_id: item.employee_id, // Optional, can be used for editing or deleting feedback
+          employee: item.employee_name,
+          feedback: item.strengths || "No feedback provided",
+          date: new Date(item.submitted_at).toLocaleDateString(),
+          status: item.acknowledged ? "Completed" : "Pending",
+        }));
+
+        setFeedbacks(formattedData);
+      } catch (error) {
+        console.error("Error fetching feedbacks:", error);
+        setError("Failed to load feedbacks.");
+
+        // Handle error (e.g., show a notification)
+      }
+      finally {
+        setLoading(false);
+      }
+    }
+    getFeedbacks();
+    // setFeedbacks(feedbackData);
+  }, []);
+
+  // console.log("Feedbacks:", feedbacks);
+
+  // const filtered = feedbackData.filter((item) =>
+  const filtered = feedbacks?.filter((item) =>
+    item?.employee?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -70,30 +132,44 @@ const FeedbackHistory = () => {
                 <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
-              {filtered.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-800">{item.employee}</td>
-                  <td className="px-4 py-3 text-gray-600">{item.feedback}</td>
-                  <td className="px-4 py-3 text-gray-500">{item.date}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-block px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-700 rounded-full">
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button className="text-blue-600 hover:underline text-sm">Edit</button>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-center text-gray-500 py-6">
-                    No feedback found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
+            {
+              loading ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={5} className="text-center py-6 text-gray-500">
+                      Loading feedback data...
+                    </td>
+                  </tr>
+                </tbody>
+              ) : (
+                <tbody className="divide-y">
+                  {/* {filtered.map((item, index) => ( */}
+                  {filtered?.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-800">{item.employee}</td>
+                      <td className="px-4 py-3 text-gray-600">{item.feedback}</td>
+                      <td className="px-4 py-3 text-gray-500">{item.date}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-block px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-700 rounded-full">
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button className="text-blue-600 hover:underline text-sm">Edit</button>
+                      </td>
+                    </tr>
+                  ))}
+                  {/* {filtered.length === 0 && ( */}
+                  {filtered?.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="text-center text-gray-500 py-6">
+                        No feedback found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              )
+            }
           </table>
         </div>
       </div>

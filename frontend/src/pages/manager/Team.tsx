@@ -1,5 +1,16 @@
+import axios from "axios";
 import Layout from "../../components/Layout";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+
+type TeamMember = {
+  username: string;
+  position: string;
+  feedback_count: number;
+  sentiment_trend: "Positive" | "Neutral" | "Negative";
+};
+
+const API = import.meta.env.VITE_API_URL;
 
 const teamData = [
   {
@@ -42,9 +53,41 @@ const sentimentColors: Record<string, string> = {
 
 const Team = () => {
   const [search, setSearch] = useState("");
+  const [team, setTeam] = useState<TeamMember[]>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredTeam = teamData.filter((member) =>
-    member.name.toLowerCase().includes(search.toLowerCase())
+
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+    // Simulate fetching team data from an API
+
+    setLoading(true);
+    setError(null);
+
+    const fetchTeamData = async () => {
+      // const response = await new Promise<TeamMember[]>((resolve) => {
+      const response = await axios.get<TeamMember[]>(`${API}/users/team`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.data;
+      setTeam(data);
+      setLoading(false);
+
+    };
+
+    fetchTeamData();
+  }, []);
+
+  // console.log("Team Data:", team);
+
+  // const filteredTeam = teamData.filter((member) =>
+  const filteredTeam = team?.filter((member) =>
+    member?.username?.toLowerCase().includes(search?.toLowerCase())
   );
 
   return (
@@ -67,35 +110,43 @@ const Team = () => {
         {/* Table */}
         <div className="overflow-x-auto">
           <h2 className="text-lg font-semibold text-gray-700 mb-3">Team Overview</h2>
-          <table className="min-w-full text-sm text-left border rounded-lg overflow-hidden">
-            <thead className="bg-gray-100 text-gray-700 text-sm">
-              <tr>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Feedback Count</th>
-                <th className="px-4 py-3">Sentiment Trend</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {filteredTeam.map((member, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-800">{member.name}</td>
-                  <td className="px-4 py-3 text-blue-600 hover:underline cursor-pointer">{member.role}</td>
-                  <td className="px-4 py-3 text-gray-600">{member.feedbackCount}</td>
-                  <td className={`px-4 py-3 font-medium ${sentimentColors[member.sentiment]}`}>
-                    {member.sentiment}
-                  </td>
-                </tr>
-              ))}
-              {filteredTeam.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="text-center text-gray-500 py-6">
-                    No team members found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {loading ? (
+            <p className="text-center py-6 text-gray-500">
+              Loading team data...
+            </p>
+          ) :
+            (
+              <table className="min-w-full text-sm text-left border rounded-lg overflow-hidden">
+                <thead className="bg-gray-100 text-gray-700 text-sm">
+                  <tr>
+                    <th className="px-4 py-3">Name</th>
+                    <th className="px-4 py-3">Role</th>
+                    <th className="px-4 py-3">Feedback Count</th>
+                    <th className="px-4 py-3">Sentiment Trend</th>
+                  </tr>
+                </thead>
+                {/* <tbody> */}
+                <tbody className="divide-y">
+                  {filteredTeam?.map((member, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-800">{member.username}</td>
+                      <td className="px-4 py-3 text-blue-600 hover:underline cursor-pointer">{member.position}</td>
+                      <td className="px-4 py-3 text-gray-600">{member.feedback_count}</td>
+                      <td className={`px-4 py-3 font-medium ${sentimentColors[member.sentiment_trend]}`}>
+                        {member.sentiment_trend}
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredTeam?.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="text-center text-gray-500 py-6">
+                        No team members found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
         </div>
       </div>
     </Layout>
