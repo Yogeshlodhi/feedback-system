@@ -1,0 +1,56 @@
+# version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: feedback-backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST="cloud_db_host"
+      - DB_PORT=5432
+      - DB_USER="cloud_db_user"
+      - DB_PASSWORD="cloud_db_password"
+      - DB_NAME="cloud_db_name"
+      # Uncomment the following lines to use a local database
+      # - DB_HOST=db
+      # - DB_PORT=5432
+      # - DB_USER=postgres
+      # - DB_PASSWORD=postgres
+      # - DB_NAME=feedback
+
+    volumes:
+      - ./backend:/app
+    # depends_on:
+    #   - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: feedback-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      # - VITE_API_URL=https://feedback-system-tmbt.onrender.com/api
+      - VITE_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+
+  # db:
+  #   image: postgres:15
+  #   container_name: postgres-db
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: feedback
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

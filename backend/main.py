@@ -17,9 +17,6 @@ origins = [
     "*"
 ]
 
-from routes import seed_data  # adjust path as needed
-app.include_router(seed_data.router, prefix="/seed", tags=["seed"])
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
