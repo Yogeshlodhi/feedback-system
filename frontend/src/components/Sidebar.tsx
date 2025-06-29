@@ -19,7 +19,8 @@ const Sidebar = () => {
 
         {isManager && (
           <>
-            <a className="block text-lg text-gray-700 hover:text-black" href="/team">Team</a>
+            {/* <a className="block text-lg text-gray-700 hover:text-black" href="/team">Team</a> */}
+            <a className="block text-lg text-gray-700 hover:text-black" href="/">Team</a>
             <a className="block text-lg text-gray-700 hover:text-black" href="/history">Feedback History</a>
             <a className="block text-lg text-gray-700 hover:text-black" href="/submit-feedback">Submit Feedback</a>
           </>
@@ -27,8 +28,9 @@ const Sidebar = () => {
 
         {isEmployee && (
           <>
-            <a className="block text-lg text-gray-700 hover:text-black" href="/home">Home</a>
-            <a className="block text-lg text-gray-700 hover:text-black" href="/timeline">Feedback Timelines</a>
+            {/* <a className="block text-lg text-gray-700 hover:text-black" href="/home">Home</a> */}
+            {/* <a className="block text-lg text-gray-700 hover:text-black" href="/timeline">Feedback Timelines</a> */}
+            <a className="block text-lg text-gray-700 hover:text-black" href="/">Feedback Timelines</a>
             <a className="block text-lg text-gray-700 hover:text-black" href="/my-feedbacks">My Feedbacks</a>
             {/* <a className="block text-lg text-gray-700 hover:text-black" href="/submit-feedback">Submit Feedback</a> */}
           </>

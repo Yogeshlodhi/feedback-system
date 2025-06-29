@@ -3,8 +3,12 @@ from jose import jwt
 from typing import Optional
 from jose.exceptions import JWTError
 from settings import settings
-
 from passlib.context import CryptContext
+
+SECRET_KEY = settings.SECRET_KEY  # Replace with your actual secret key
+ALGORITHM = settings.ALGORITHM  # Replace with your desired algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES  # Default expiration time for access tokens in minutes
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -21,17 +25,10 @@ def decode_access_token(token: str) -> Optional[dict]:
     except JWTError:
         return None
 
-SECRET_KEY = settings.SECRET_KEY  # Replace with your actual secret key
-ALGORITHM = settings.ALGORITHM  # Replace with your desired algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES  # Default expiration time for access tokens in minutes
 
 def create_access_token(data: dict, expires_delta: int = None):
     """
     Create a JWT access token with the given data and expiration time.
-    
-    :param data: The data to include in the token payload.
-    :param expires_delta: Optional expiration time in seconds. If None, the token will not expire.
-    :return: A JWT access token as a string.
     """
 
     if expires_delta:

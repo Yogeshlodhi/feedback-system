@@ -19,7 +19,6 @@ class UserCreate(UserBase):
 
 class TokenResponse(SQLModel):
     access_token: str
-    # token_type: str
     user: UserBase
     
 class LoginRequest(BaseModel):
@@ -29,7 +28,6 @@ class LoginRequest(BaseModel):
 class UserTeamResponse(BaseModel):
     member_id: UUID
     username: str
-    # role: str
     feedback_count: int
     position: Optional[str] = "Software Developer"  # Placeholder
     sentiment_trend: Optional[str] = "Neutral"      # Placeholder

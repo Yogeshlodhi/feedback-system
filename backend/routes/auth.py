@@ -17,22 +17,6 @@ def health_check():
     """
     return {"message": "Service is running"}
 
-@router.get("/get_users", response_model=list[User])
-def get_users(session: Session = Depends(get_session)):
-    """
-    Retrieve all users in the system.
-    This endpoint returns a list of all registered users.
-    """
-    users = session.exec(select(User)).all()
-    return users
-
-
-@router.get("/get_teams", response_model=list[Team])
-def get_teams(session: Session = Depends(get_session)):
-    
-    teams = session.exec(select(Team)).all()
-    return teams
-
 
 @router.post("/signup", response_model=TokenResponse)
 def signup(user_in: UserCreate, session: Session = Depends(get_session)):
@@ -56,16 +40,13 @@ def signup(user_in: UserCreate, session: Session = Depends(get_session)):
         username=user_in.username,
         email=user_in.email,
         role=user_in.role,
-        # password=user_in.password  # In a real application, ensure to hash the password
-        password=hash_password(user_in.password)  # Placeholder for hashed password
+        password=hash_password(user_in.password)  
     )
     
     session.add(new_user)
     session.commit()    
     session.refresh(new_user)
     
-    # fix the create_access_token function to accept a user ID and role
-    # This function should create a JWT token with the user's ID and role
     access_token = create_access_token(data={"sub": str(new_user.id), "role": new_user.role})
     
     return TokenResponse(access_token=access_token, user=new_user)
@@ -87,27 +68,4 @@ def login(user_in: LoginRequest, session: Session = Depends(get_session)):
         )
 
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
-    # return TokenResponse(access_token=access_token, token_type="bearer")
     return TokenResponse(access_token=access_token, user=user)
-
-# @router.post("/login", response_model=TokenResponse)
-# def login(user_in: UserCreate, session: Session = Depends(get_session)):
-#     """
-#     Authenticate a user and return an access token.
-#     This endpoint allows users to log in by providing their username and password.
-#     """
-    
-#     user = session.exec(
-#         select(User).where(User.email == user_in.email)
-#     ).first()
-    
-#     if not user or user.password != user_in.password:  # In a real application, ensure to verify the hashed password
-#         raise HTTPException(
-#             # status_code= status.HTTP_401_UNAUTHORIZED,
-#             status_code= 401,
-#             detail="Invalid username or password",
-#         )
-        
-#     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})   
-    
-#     return TokenResponse(access_token=access_token, token_type="bearer")

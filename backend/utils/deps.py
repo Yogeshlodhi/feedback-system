@@ -1,5 +1,3 @@
-# app/api/deps.py
-
 from sqlmodel import Session, select
 from db.session import get_session
 from models.user import User

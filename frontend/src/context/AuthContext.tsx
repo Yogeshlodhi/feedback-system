@@ -46,11 +46,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const login = (user: User, token: string) => {
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('token', token);
+        setToken(token);
         setUser(user);
     };
 
     const logout = () => {
         localStorage.clear();
+        setToken(null);
         setUser(null);
     };
 

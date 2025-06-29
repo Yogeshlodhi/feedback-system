@@ -2,51 +2,25 @@ import axios from "axios";
 import Layout from "../../components/Layout";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import EditFeedbackModal from "../../components/modals/EditFeedbackModal";
+import ViewFeedbackModal from "../../components/modals/ViewFeedbackModal";
 
 const API = import.meta.env.VITE_API_URL;
 
 type FeedbackType = {
-  employee_id?: string; // Optional employee ID
-  employee: string; // Employee name
+  feedback_id: string; // Unique feedback ID
+  employee_id: string; // Optional employee ID
+  employee_name: string; // Employee name
+  employee_email: string; // Optional employee email, can be used for editing or deleting feedback
   feedback: string; // Feedback text
   date: string; // Date of feedback
   status: string; // Status of feedback (e.g., Completed, Pending)
-  // Actions can be buttons or links for editing, deleting, etc.
-  actions?: React.ReactNode; // Optional actions column
+  // actions?: React.ReactNode; // Optional actions column
+  strengths?: string; // Optional strengths field
+  behavior?: string; // Optional behavior field
+  area_to_improve?: string; // Optional area to improve field
+  feedback_type?: 'positive' | 'negative' | 'neutral'; // Optional feedback type
 };
-
-const feedbackData = [
-  {
-    employee: "Ethan Harper",
-    feedback: "Great work on the recent project, especially the presentation.",
-    date: "2023-08-15",
-    status: "Completed",
-  },
-  {
-    employee: "Olivia Bennett",
-    feedback: "Excellent problem-solving skills during the client meeting.",
-    date: "2023-07-20",
-    status: "Completed",
-  },
-  {
-    employee: "Noah Carter",
-    feedback: "Consistently delivers high-quality work and meets deadlines.",
-    date: "2023-06-25",
-    status: "Completed",
-  },
-  {
-    employee: "Ava Morgan",
-    feedback: "Strong team player and always willing to help colleagues.",
-    date: "2023-05-30",
-    status: "Completed",
-  },
-  {
-    employee: "Liam Foster",
-    feedback: "Demonstrates a proactive approach to learning new technologies.",
-    date: "2023-04-05",
-    status: "Completed",
-  },
-];
 
 const FeedbackHistory = () => {
   const [search, setSearch] = useState("");
@@ -57,6 +31,11 @@ const FeedbackHistory = () => {
   const [error, setError] = useState<string | null>(null);
 
   const { token } = useContext(AuthContext);
+
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackType | null>(null);
+
 
   useEffect(() => {
 
@@ -74,33 +53,34 @@ const FeedbackHistory = () => {
 
         // Map the response to the feedbackData structure
         const formattedData = data.map((item: any) => ({
+          feedback_id: item.feedback_id, // Unique feedback ID
           employee_id: item.employee_id, // Optional, can be used for editing or deleting feedback
-          employee: item.employee_name,
+          employee_email: item.employee_email, // Optional, can be used for editing or deleting feedback
+          employee_name: item.employee_name,
           feedback: item.strengths || "No feedback provided",
           date: new Date(item.submitted_at).toLocaleDateString(),
           status: item.acknowledged ? "Completed" : "Pending",
+          strengths: item.strengths || "No strengths provided",
+          behavior: item.behavior || "No behavior provided",
+          area_to_improve: item.area_to_improve || "No area to improve provided",
+          feedback_type: item.feedback_type || "neutral", // Default to 'neutral' if not
         }));
 
         setFeedbacks(formattedData);
       } catch (error) {
         console.error("Error fetching feedbacks:", error);
         setError("Failed to load feedbacks.");
-
-        // Handle error (e.g., show a notification)
       }
       finally {
         setLoading(false);
       }
     }
     getFeedbacks();
-    // setFeedbacks(feedbackData);
+
   }, []);
 
-  // console.log("Feedbacks:", feedbacks);
-
-  // const filtered = feedbackData.filter((item) =>
   const filtered = feedbacks?.filter((item) =>
-    item?.employee?.toLowerCase().includes(search.toLowerCase())
+    item?.employee_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -126,6 +106,7 @@ const FeedbackHistory = () => {
             <thead className="bg-gray-100 text-gray-700 text-sm">
               <tr>
                 <th className="px-4 py-3">Employee</th>
+                <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Feedback</th>
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Status</th>
@@ -146,7 +127,8 @@ const FeedbackHistory = () => {
                   {/* {filtered.map((item, index) => ( */}
                   {filtered?.map((item, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium text-gray-800">{item.employee}</td>
+                      <td className="px-4 py-3 font-medium text-gray-800">{item.employee_name}</td>
+                      <td className="px-4 py-3 text-gray-600">{item.employee_email}</td>
                       <td className="px-4 py-3 text-gray-600">{item.feedback}</td>
                       <td className="px-4 py-3 text-gray-500">{item.date}</td>
                       <td className="px-4 py-3">
@@ -154,8 +136,34 @@ const FeedbackHistory = () => {
                           {item.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <button className="text-blue-600 hover:underline text-sm">Edit</button>
+                      <td className="px-4 py-3 gap-2 flex items-center">
+                        <button
+                          className="text-blue-600 hover:underline text-sm"
+                          onClick={() => {
+                            // console.log("View button clicked for item:", item);
+                            setSelectedFeedback(item); 
+                            setEditModalOpen(true); }
+                          }
+                        // onClick={() => {
+                        //   setSelectedFeedback(item);
+                        //   setEditModalOpen(true);
+                        // }}
+                        >
+                          Edit
+                        </button> |
+                        <button
+                          className="text-blue-600 hover:underline text-sm"
+                          onClick={() => { 
+                            setSelectedFeedback(item); 
+                            setViewModalOpen(true); }
+                          }
+                        // onClick={() => {
+                        //   setSelectedFeedback(item);
+                        //   setViewModalOpen(true);
+                        // }}
+                        >
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -170,9 +178,25 @@ const FeedbackHistory = () => {
                 </tbody>
               )
             }
+
+
+
           </table>
         </div>
       </div>
+      <EditFeedbackModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        feedback={selectedFeedback}
+        token={token!}
+        onUpdated={() => window.location.reload()} // or trigger state refresh
+      />
+
+      <ViewFeedbackModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        feedback={selectedFeedback}
+      />
     </Layout>
   );
 };

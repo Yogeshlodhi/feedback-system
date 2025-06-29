@@ -21,7 +21,7 @@ import { AuthContext } from './context/AuthContext';
 
 function App() {
 
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   return (
     <Router>
@@ -34,6 +34,36 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
 
         {/* Protected Layout + Routes */}
+
+        {/*  Manager Routes */}
+        {/* <Route
+          path="/team"
+          element={
+            <ProtectedRoute>
+              <Team />
+            </ProtectedRoute>
+          }
+        /> */}
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <FeedbackHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/submit-feedback"
+          element={
+            <ProtectedRoute>
+              <SubmitFeedback />
+            </ProtectedRoute>
+          }
+        />
+        {/*  Manager Routes */}
+
+        {/* Employee Routes */}
         <Route
           path="/"
           element={
@@ -42,47 +72,23 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/timeline"
           element={
             <ProtectedRoute>
-             <FeedbackTimeline/>
+              <FeedbackTimeline />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="/my-feedbacks"
           element={
             <ProtectedRoute>
-              <MyFeedbacks/>
+              <MyFeedbacks />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/team"
-          element={
-            <ProtectedRoute>
-              <Team/>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/history"
-          element={
-            <ProtectedRoute>
-              <FeedbackHistory/>
-            </ProtectedRoute>
-          }
-        />
-
-          <Route
-            path="/submit-feedback"
-            element={
-              <ProtectedRoute>
-                <SubmitFeedback/>
-              </ProtectedRoute>
-            }
-          />
+        {/* Employee Routes */}
       </Routes>
     </Router>
   );

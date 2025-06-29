@@ -11,50 +11,15 @@ from models.feedback import Feedback
 from models.user import User
 from models.team import Team
 from schemas.user import UserRole
-from api.deps import get_current_user
-from schemas.feedback import FeedbackCreate, FeedbackRead, FeedbackUpdate, FeedbackCreateRequest
-# from schemas.user import 
-
-from pydantic import BaseModel
-from schemas.feedback import FeedbackType
+from utils.deps import get_current_user
+from schemas.feedback import FeedbackRead, FeedbackUpdate, FeedbackCreateRequest, SubmittedFeedbackResponse
 from datetime import datetime
-
 
 
 router = APIRouter()
 
-class FeedbackOut(BaseModel):
-    id: UUID
-    strengths: Optional[str]
-    behavior: Optional[str]
-    area_to_improve: Optional[str]
-    feedback_type: FeedbackType
-    acknowledged: bool
-    created_at: datetime
 
-    # class Config:
-    #     orm_mode = True
-
-class EmployeeWithFeedbackOut(BaseModel):
-    id: UUID
-    username: str
-    email: str
-    feedbacks: list[FeedbackOut]
-
-    # class Config:
-    #     orm_mode = True
-    
-class SubmittedFeedbackResponse(BaseModel):
-    employee_id: UUID
-    employee_name: str
-    submitted_at: datetime
-    strengths: Optional[str]
-    behavior: Optional[str]
-    area_to_improve: Optional[str]
-    acknowledged: bool
-    feedback_type: str
-
-
+# Get all feedbacks submitted by a specific manager
 @router.get("/submitted", response_model=List[SubmittedFeedbackResponse])
 def get_team_feedbacks_by_manager(
     current_user: User = Depends(get_current_user),
@@ -70,13 +35,14 @@ def get_team_feedbacks_by_manager(
     response = []
     for fb in feedbacks:
         employee = session.get(User, fb.employee_id)
-        # print(f"Processing feedback for employee: {employee}")
         
-        # print(f"Feedback details: {fb}")
+        # print("Feedback Details:", fb.id)
         
         response.append(SubmittedFeedbackResponse(
+            feedback_id=fb.id,
             employee_id=employee.id,
             employee_name=employee.username,
+            employee_email=employee.email,
             submitted_at=fb.created_at.date(),
             strengths=fb.strengths,
             behavior=fb.behavior,
@@ -88,6 +54,7 @@ def get_team_feedbacks_by_manager(
     return response
 
 
+# Submit feedback for an employee
 @router.post("/submit")
 def submit_feedback(
     feedback_data: FeedbackCreateRequest,
@@ -129,22 +96,7 @@ def submit_feedback(
     return {"message": "Feedback submitted successfully", "feedback_id": new_feedback.id}
 
 
-@router.get("/me", response_model=List[FeedbackRead])
-def get_my_feedback(
-    session: Session = Depends(get_session),
-    # current_user: User = Depends(get_current_user)
-):
-    # if current_user.role != UserRole.EMPLOYEE:
-    #     raise HTTPException(status_code=403, detail="Only employees can see feedback")
-
-    # feedbacks = session.exec(
-    #     select(Feedback).where(Feedback.employee_id == current_user.id)
-    # ).all()
-    
-    # return feedbacks
-    return []
-
-
+# Give aknowledgment to a feedback
 @router.patch("/{feedback_id}/acknowledge", response_model=FeedbackRead)
 def acknowledge_feedback(
     feedback_id: UUID,
@@ -163,22 +115,30 @@ def acknowledge_feedback(
     return feedback
 
 
-@router.patch("/{feedback_id}", response_model=FeedbackRead)
+# Update / Edit a feedback
+# @router.patch("/{feedback_id}", response_model=FeedbackRead)
+@router.patch("/{feedback_id}")
 def update_feedback(
     feedback_id: UUID,
     data: FeedbackUpdate,
     session: Session = Depends(get_session),
-    # current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     feedback = session.get(Feedback, feedback_id)
 
-    # if not feedback or feedback.manager_id != current_user.id:
-    #     raise HTTPException(status_code=403, detail="Not allowed to edit")
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Feedback not found")
 
+    # Only the manager who submitted the feedback can edit it
+    if current_user.id != feedback.manager_id:
+        raise HTTPException(status_code=403, detail="You can only update feedback you submitted")
+
+    # Update only provided fields
     for field, value in data.dict(exclude_unset=True).items():
         setattr(feedback, field, value)
 
     session.add(feedback)
     session.commit()
     session.refresh(feedback)
+
     return feedback

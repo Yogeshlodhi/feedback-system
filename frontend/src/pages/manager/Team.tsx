@@ -59,12 +59,13 @@ const Team = () => {
 
 
   const { token } = useContext(AuthContext);
-
+  
   useEffect(() => {
-    // Simulate fetching team data from an API
+    if (!token) return;
 
     setLoading(true);
     setError(null);
+
 
     const fetchTeamData = async () => {
       // const response = await new Promise<TeamMember[]>((resolve) => {
@@ -83,9 +84,6 @@ const Team = () => {
     fetchTeamData();
   }, []);
 
-  // console.log("Team Data:", team);
-
-  // const filteredTeam = teamData.filter((member) =>
   const filteredTeam = team?.filter((member) =>
     member?.username?.toLowerCase().includes(search?.toLowerCase())
   );
