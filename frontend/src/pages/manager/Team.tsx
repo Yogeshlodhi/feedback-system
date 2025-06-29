@@ -22,7 +22,7 @@ const Team = () => {
   const [search, setSearch] = useState("");
   const [team, setTeam] = useState<TeamMember[]>();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
 
   const { token } = useContext(AuthContext);
@@ -31,7 +31,7 @@ const Team = () => {
     if (!token) return;
 
     setLoading(true);
-    setError(null);
+    // setError(null);
 
 
     const fetchTeamData = async () => {
@@ -45,7 +45,6 @@ const Team = () => {
       const data = await response.data;
       setTeam(data);
       setLoading(false);
-
     };
 
     fetchTeamData();

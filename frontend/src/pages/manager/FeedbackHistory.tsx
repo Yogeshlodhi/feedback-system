@@ -27,7 +27,7 @@ const FeedbackHistory = () => {
   const [feedbacks, setFeedbacks] = useState<FeedbackType[]>();
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const { token } = useContext(AuthContext);
 
@@ -67,7 +67,7 @@ const FeedbackHistory = () => {
         setFeedbacks(formattedData);
       } catch (error) {
         console.error("Error fetching feedbacks:", error);
-        setError("Failed to load feedbacks.");
+        // setError("Failed to load feedbacks.");
       }
       finally {
         setLoading(false);
