@@ -8,10 +8,18 @@ class UserRole(str, Enum):
     MANAGER="manager"
     EMPLOYEE="employee"
     
+class UserPosition(str, Enum):
+    SOFTWARE_DEVELOPER = "Software Developer"
+    DATA_ANALYST = "Data Analyst"
+    QA_ENGINEER = "QA Engineer"
+    DESIGNER = "Designer"
+    MANAGER = "Manager"
+    
 class UserBase(SQLModel):
     username: str
     email: str
     role: UserRole = UserRole.EMPLOYEE
+    position: UserPosition
 
 class UserCreate(UserBase):
     password: str

@@ -1,4 +1,3 @@
-# app/api/routes/feedback.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
@@ -12,7 +11,7 @@ from models.user import User
 from models.team import Team
 from schemas.user import UserRole
 from utils.deps import get_current_user
-from schemas.feedback import FeedbackRead, FeedbackUpdate, FeedbackCreateRequest, SubmittedFeedbackResponse
+from schemas.feedback import FeedbackRead, FeedbackUpdate, FeedbackCreateRequest, SubmittedFeedbackResponse, MyFeedbackResponse, AcknowledgeResponse
 from datetime import datetime
 
 
@@ -142,3 +141,85 @@ def update_feedback(
     session.refresh(feedback)
 
     return feedback
+
+#  Get Feedbacks Timeline for a specific employee
+@router.get("/timeline", response_model=List[FeedbackRead])  
+def get_feedback_timeline(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    employee_id = current_user.id
+    
+    if not employee_id:
+        raise HTTPException(status_code=404, detail="Employee not found")    
+
+    feedbacks = session.exec(
+        select(Feedback).where(Feedback.employee_id == employee_id).order_by(Feedback.created_at.desc())
+    ).all()
+    
+    print("Feedbacks:", feedbacks)
+
+    return feedbacks
+
+
+# Get all feedbacks received for the current employee
+@router.get("/my_feedbacks", response_model=List[MyFeedbackResponse])  
+def get_my_feedbacks(
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    feedbacks = session.exec(
+        select(Feedback)
+        .where(Feedback.employee_id == current_user.id)
+        .order_by(Feedback.created_at.desc())
+    ).all()
+
+    if not feedbacks:
+        return []
+
+    response = []
+    for fb in feedbacks:
+        print("Feedback ID:", fb)
+        manager = session.get(User, fb.manager_id)
+        response.append(
+            MyFeedbackResponse(
+            feedback_id=fb.id,
+            from_manager=manager.username,
+            strengths=fb.strengths or "No strengths mentioned",
+            behavior=fb.behavior or "No behavior mentioned",
+            area_to_improve=fb.area_to_improve or "No improvement area mentioned",
+            feedback_type=fb.feedback_type.value,
+            received_on=fb.created_at,
+            acknowledged=fb.acknowledged
+        ))
+
+    return response
+
+
+
+# Acknowledge feedback by employee
+@router.patch("/acknowledge/{feedback_id}")
+def acknowledge_feedback(
+    feedback_id: UUID,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    feedback = session.get(Feedback, feedback_id)
+
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+
+    if feedback.employee_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to acknowledge this feedback")
+
+    if feedback.acknowledged:
+        return {"message": "Feedback already acknowledged"}
+    
+
+    feedback.acknowledged = True
+    
+    session.add(feedback)
+    session.commit()
+    session.refresh(feedback)
+
+    return {"message": "Feedback acknowledged successfully"}

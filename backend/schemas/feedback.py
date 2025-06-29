@@ -13,8 +13,8 @@ class FeedbackType(str, Enum):
 
 class FeedbackCreate(SQLModel):
     strengths: str
-    areas_to_improve: str
-    sentiment: FeedbackType
+    area_to_improve: str
+    feedback_type : FeedbackType
     employee_id: UUID
 
 
@@ -23,12 +23,11 @@ class FeedbackUpdate(SQLModel):
     behavior: Optional[str]
     area_to_improve: Optional[str]
     feedback_type: Optional[FeedbackType]
-    # acknowledged: Optional[bool]
 
 
 
 class FeedbackRead(FeedbackCreate):
-    feedback_id: UUID
+    id: UUID
     employee_id: UUID
     manager_id: UUID
     strengths: Optional[str]
@@ -38,9 +37,6 @@ class FeedbackRead(FeedbackCreate):
     acknowledged: bool
     created_at: datetime
     updated_at: datetime
-    # id: UUID
-    # manager_id: UUID
-    # acknowledged: bool
 
 
 class FeedbackCreateRequest(SQLModel):
@@ -48,7 +44,7 @@ class FeedbackCreateRequest(SQLModel):
     strengths: Optional[str]
     behavior: Optional[str]
     area_to_improve: Optional[str]
-    feedback_type: FeedbackType  # e.g., POSITIVE, NEGATIVE, NEUTRAL
+    feedback_type: FeedbackType  
 
 class SubmittedFeedbackResponse(SQLModel):
     feedback_id: UUID
@@ -77,3 +73,16 @@ class EmployeeWithFeedbackOut(SQLModel):
     username: str
     email: str
     feedbacks: list[FeedbackOut]
+    
+class MyFeedbackResponse(SQLModel):
+    feedback_id: UUID
+    from_manager: str
+    strengths: str
+    behavior: str
+    area_to_improve: str
+    feedback_type: str 
+    received_on: datetime
+    acknowledged: bool
+
+class AcknowledgeResponse(SQLModel):
+    message: str

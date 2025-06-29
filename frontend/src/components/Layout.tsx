@@ -11,7 +11,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   if (!user) return null;
 
-  // Close dropdown when clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -28,11 +27,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-gray-50">
-      <Sidebar />
+    <div className="flex w-full h-screen overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-64 flex-shrink-0">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1">
-        <header className="h-20 bg-white flex items-center justify-between px-6 border-b relative">
+      {/* Right Section (Header + Scrollable Main) */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Header */}
+        <header className="h-20 flex-shrink-0 bg-white flex items-center justify-between px-6 border-b">
           <h1 className="text-xl font-semibold"></h1>
 
           <div className="relative" ref={dropdownRef}>
@@ -60,58 +64,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </button>
               </div>
             )}
-
           </div>
         </header>
 
-        <main className="p-6">{children}</main>
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          {children}
+        </main>
       </div>
     </div>
   );
 };
 
 export default Layout;
-
-
-
-
-
-// // src/components/Layout.tsx
-
-// import React, { useContext } from 'react';
-// import { AuthContext } from '../context/AuthContext';
-// import Sidebar from './Sidebar';
-
-// const Layout = ({ children }: { children: React.ReactNode }) => {
-//   const { user } = useContext(AuthContext);
-
-//   if (!user) return null; // Don't render anything if no user
-
-//   return (
-//     <div className="min-h-screen w-full flex bg-gray-50">
-//       {/* Sidebar */}
-//       <Sidebar/>
-
-//       {/* Main Content */}
-//       <div className="flex-1">
-//         <header className="h-20 bg-white flex items-center justify-between px-6 border-b">
-//           <h1 className="text-xl font-semibold"></h1>
-//           <div className="flex items-center space-x-4">
-//             <span className="text-sm text-gray-600">Hello, {user.email}</span>
-//             <img
-//               src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${user.email}`}
-//               className="w-8 h-8 rounded-full"
-//               alt="avatar"
-//             />
-//           </div>
-//         </header>
-
-//         <main className="p-6">
-//           {children}
-//         </main>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Layout;

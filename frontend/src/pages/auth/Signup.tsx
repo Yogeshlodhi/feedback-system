@@ -1,5 +1,3 @@
-// src/components/LoginPage.tsx
-
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,49 +5,67 @@ import { toast } from 'sonner';
 
 const API = import.meta.env.VITE_API_URL;
 
-type Role = 'user' | 'admin' | 'superadmin';
+type Role = 'employee' | 'manager';
+type Position =
+    | 'Software Developer'
+    | 'Data Analyst'
+    | 'QA Engineer'
+    | 'Designer'
+    | 'Manager';
+
+const positions: Position[] = [
+    'Software Developer',
+    'Data Analyst',
+    'QA Engineer',
+    'Designer',
+    'Manager',
+];
 
 const SignUpPage: React.FC = () => {
-    const [userName, setUserName] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [role, setRole] = useState<Role>();
+    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [role, setRole] = useState<Role | ''>('');
+    const [position, setPosition] = useState<Position | ''>('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const [error, setError] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false); // 🔄 loading state
-
-    const navigate = useNavigate(); // 🧭 navigation
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
-        if (!email || !password || !userName) {
-            setError('Please enter the required fields.');
-            toast.error('Please enter the required fields.');
+        if (!email || !password || !userName || !role || !position) {
+            setError('Please fill in all required fields.');
+            toast.error('Please fill in all required fields.');
             setLoading(false);
             return;
         }
 
         try {
-            await axios.post(`${API}/auth/signup`, { email, password, username: userName, role });
+            await axios.post(`${API}/auth/signup`, {
+                email,
+                password,
+                username: userName,
+                role,
+                position,
+            });
 
-            toast.success('User Created Successfully! Redirecting...');
-
+            toast.success('🎉 User created successfully!');
             setEmail('');
             setPassword('');
-            setError('');
+            setUserName('');
+            setRole('');
+            setPosition('');
 
-            // Redirect to login using navigate
             navigate('/login');
-
         } catch (err: any) {
             const message =
                 err?.response?.data?.detail ||
                 err?.response?.data?.message ||
-                'Login failed. Please try again.';
-
+                'Signup failed. Please try again.';
             setError(message);
             toast.error(message);
         } finally {
@@ -57,22 +73,20 @@ const SignUpPage: React.FC = () => {
         }
     };
 
-
-
     return (
         <div className="w-full min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Signup</h1>
 
                 <form onSubmit={handleSubmit}>
+                    {/* Email */}
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-gray-700 text-sm font-semibold mb-2">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">
                             Email
                         </label>
                         <input
-                            type="text"
-                            // id="username"
-                            className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                            type="email"
+                            className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -80,14 +94,14 @@ const SignUpPage: React.FC = () => {
                         />
                     </div>
 
+                    {/* Username */}
                     <div className="mb-4">
-                        <label htmlFor="username" className="block text-gray-700 text-sm font-semibold mb-2">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">
                             Username
                         </label>
                         <input
                             type="text"
-                            // id="username"
-                            className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                            className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter your username"
                             value={userName}
                             onChange={(e) => setUserName(e.target.value)}
@@ -95,13 +109,14 @@ const SignUpPage: React.FC = () => {
                         />
                     </div>
 
+                    {/* Role */}
                     <div className="mb-4">
-                        <label htmlFor="role" className="block text-gray-700 text-sm font-semibold mb-2">
+                        <label htmlFor='role' className="block text-gray-700 text-sm font-semibold mb-2">
                             Role
                         </label>
                         <select
-                            id="role"
-                            className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                            id='role'
+                            className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={role}
                             onChange={(e) => setRole(e.target.value as Role)}
                             required
@@ -112,14 +127,35 @@ const SignUpPage: React.FC = () => {
                         </select>
                     </div>
 
+                    {/* Position */}
+                    <div className="mb-4">
+                        <label htmlFor='position' className="block text-gray-700 text-sm font-semibold mb-2">
+                            Position
+                        </label>
+                        <select
+                            id='position'
+                            className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={position}
+                            onChange={(e) => setPosition(e.target.value as Position)}
+                            required
+                        >
+                            <option value="">Select a position</option>
+                            {positions.map((pos) => (
+                                <option key={pos} value={pos}>
+                                    {pos}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Password */}
                     <div className="mb-6">
-                        <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">
                             Password
                         </label>
                         <input
                             type="password"
-                            id="password"
-                            className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                            className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -134,8 +170,10 @@ const SignUpPage: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                            } text-white font-semibold`}
+                        className={`w-full py-2 px-4 rounded-md text-white font-semibold transition duration-200 ${loading
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700'
+                            }`}
                     >
                         {loading ? 'Creating...' : 'Signup'}
                     </button>
@@ -143,7 +181,10 @@ const SignUpPage: React.FC = () => {
 
                 <p className="text-center text-gray-600 text-sm mt-6">
                     Already have an account?{' '}
-                    <a href="/login" className="text-blue-600 hover:text-blue-800 font-semibold transition duration-200">
+                    <a
+                        href="/login"
+                        className="text-blue-600 hover:text-blue-800 font-semibold"
+                    >
                         Login
                     </a>
                 </p>

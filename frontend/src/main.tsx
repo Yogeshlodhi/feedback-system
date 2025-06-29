@@ -11,7 +11,4 @@ createRoot(document.getElementById('root')!).render(
       <App />
     </AuthProvider>
   </StrictMode>
-  // <StrictMode>
-  //   <App />
-  // </StrictMode>,
 )

@@ -1,5 +1,3 @@
-// src/components/LoginPage.tsx
-
 import { AuthContext } from '../../context/AuthContext';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
@@ -12,8 +10,8 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); // 🔄 loading state
-  const navigate = useNavigate(); // 🧭 navigation
+  const [loading, setLoading] = useState<boolean>(false); 
+  const navigate = useNavigate(); 
 
   const { login } = useContext(AuthContext);
 
@@ -41,11 +39,6 @@ const LoginPage: React.FC = () => {
       setEmail('');
       setPassword('');
       setError('');
-
-      // Redirect to dashboard using navigate
-      // if (user.role === 'manager') {
-      //   navigate('/team');
-      // }
       navigate('/');
 
     } catch (err: any) {
@@ -82,7 +75,6 @@ const LoginPage: React.FC = () => {
             </label>
             <input
               type="text"
-              // id="username"
               className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
               placeholder="Enter your email"
               value={email}

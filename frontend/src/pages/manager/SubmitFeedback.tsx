@@ -2,6 +2,7 @@ import Layout from "../../components/Layout";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
+import { toast } from "sonner";
 
 interface Employee {
   member_id: string;
@@ -19,41 +20,57 @@ const SubmitFeedback = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [teamMembers, setTeamMembers] = useState<Employee[]>([]);
 
-  // Fetch team members when component mounts
+  const [loading, setLoading] = useState(false);
+
+  const { token } = useContext(AuthContext);
+
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
         const response = await axios.get(`${API}/users/team`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setTeamMembers(response.data);
       } catch (error) {
         console.error("Failed to fetch team members", error);
+        toast.error("Failed to load team members");
       }
     };
 
     fetchTeamMembers();
   }, []);
 
-  const { token } = useContext(AuthContext);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
-    await axios.post(`${API}/feedback/submit`, {
-      employee_id: selectedEmployeeId,
-      strengths,
-      behavior,
-      area_to_improve: improvement,
-      feedback_type: sentiment.toLowerCase(), // Convert to uppercase to match backend expectations
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      await axios.post(
+        `${API}/feedback/submit`,
+        {
+          employee_id: selectedEmployeeId,
+          strengths,
+          behavior,
+          area_to_improve: improvement,
+          feedback_type: sentiment.toLowerCase(),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
+      // Reset form
+      setSelectedEmployeeId("");
+      setStrengths("");
+      setBehavior("");
+      setImprovement("");
+      setSentiment("");
+
+      toast.success("Feedback submitted successfully!");
+    } catch (err) {
+      console.error("Submission failed", err);
+      toast.error("Failed to submit feedback");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,7 +79,7 @@ const SubmitFeedback = () => {
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Provide Feedback</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Employee Dropdown */}
+          {/* Team Member Select */}
           <div className="flex mb-6 items-center justify-around">
             <label htmlFor="employee" className="block text-sm font-semibold text-gray-700 mb-2">
               Select Team Member
@@ -74,9 +91,7 @@ const SubmitFeedback = () => {
               className="w-[50%] border rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               required
             >
-              <option value="" disabled>
-                -- Select a team member --
-              </option>
+              <option value="" disabled>-- Select a team member --</option>
               {teamMembers.map((member) => (
                 <option key={member.member_id} value={member.member_id}>
                   {member.username}
@@ -87,9 +102,7 @@ const SubmitFeedback = () => {
 
           {/* Strengths */}
           <div>
-            <label htmlFor="strengths" className="block text-sm font-semibold text-gray-700 mb-2">
-              Strengths
-            </label>
+            <label htmlFor="strengths" className="block text-sm font-semibold text-gray-700 mb-2">Strengths</label>
             <textarea
               id="strengths"
               value={strengths}
@@ -101,10 +114,9 @@ const SubmitFeedback = () => {
             />
           </div>
 
+          {/* Behavior */}
           <div>
-            <label htmlFor="behavior" className="block text-sm font-semibold text-gray-700 mb-2">
-              Behavior
-            </label>
+            <label htmlFor="behavior" className="block text-sm font-semibold text-gray-700 mb-2">Behavior</label>
             <textarea
               id="behavior"
               value={behavior}
@@ -116,11 +128,9 @@ const SubmitFeedback = () => {
             />
           </div>
 
-          {/* Areas for Improvement */}
+          {/* Improvement */}
           <div>
-            <label htmlFor="improvement" className="block text-sm font-semibold text-gray-700 mb-2">
-              Areas for Improvement
-            </label>
+            <label htmlFor="improvement" className="block text-sm font-semibold text-gray-700 mb-2">Areas for Improvement</label>
             <textarea
               id="improvement"
               value={improvement}
@@ -140,10 +150,11 @@ const SubmitFeedback = () => {
                 <button
                   type="button"
                   key={option}
-                  className={`px-4 py-2 rounded-md text-sm font-medium border ${sentiment === option
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                    }`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium border ${
+                    sentiment === option
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                  }`}
                   onClick={() => setSentiment(option as typeof sentiment)}
                 >
                   {option}
@@ -156,10 +167,13 @@ const SubmitFeedback = () => {
           <div className="text-right">
             <button
               type="submit"
-              disabled={!selectedEmployeeId || !strengths || !improvement || !sentiment}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2 rounded-md disabled:opacity-50"
+              disabled={!selectedEmployeeId || !strengths || !improvement || !sentiment || loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2 rounded-md disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              Submit Feedback
+              {loading && (
+                <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+              )}
+              {loading ? "Submitting..." : "Submit Feedback"}
             </button>
           </div>
         </form>

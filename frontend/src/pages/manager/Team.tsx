@@ -12,39 +12,6 @@ type TeamMember = {
 
 const API = import.meta.env.VITE_API_URL;
 
-const teamData = [
-  {
-    name: "Sophia Carter",
-    role: "Software Engineer",
-    feedbackCount: 12,
-    sentiment: "Positive",
-  },
-  {
-    name: "Ethan Bennett",
-    role: "Product Manager",
-    feedbackCount: 8,
-    sentiment: "Neutral",
-  },
-  {
-    name: "Olivia Hayes",
-    role: "UX Designer",
-    feedbackCount: 15,
-    sentiment: "Positive",
-  },
-  {
-    name: "Liam Foster",
-    role: "Data Analyst",
-    feedbackCount: 5,
-    sentiment: "Negative",
-  },
-  {
-    name: "Ava Coleman",
-    role: "Marketing Specialist",
-    feedbackCount: 10,
-    sentiment: "Positive",
-  },
-];
-
 const sentimentColors: Record<string, string> = {
   Positive: "text-green-600",
   Neutral: "text-yellow-500",

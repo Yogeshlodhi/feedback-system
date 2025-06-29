@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from db.session import get_session
 from models.user import User
@@ -40,7 +40,8 @@ def signup(user_in: UserCreate, session: Session = Depends(get_session)):
         username=user_in.username,
         email=user_in.email,
         role=user_in.role,
-        password=hash_password(user_in.password)  
+        password=hash_password(user_in.password),
+        position=user_in.position, 
     )
     
     session.add(new_user)

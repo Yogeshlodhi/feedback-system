@@ -14,8 +14,7 @@ class User(SQLModel, table=True):
     password: str = Field(nullable=False)
     role: UserRole = Field(default=UserRole.EMPLOYEE, nullable=False)
     
-    # I have to add position of the user in the company
-    # position: str = Field(index=True, nullable=False)
+    position: str = Field(nullable=False)
     
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)

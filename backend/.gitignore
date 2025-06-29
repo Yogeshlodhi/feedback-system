@@ -2,3 +2,6 @@ venv
 .env
 __pycache__
 seed.py
+seed_users.py
+seed_feedback.py
+seed_teams.py

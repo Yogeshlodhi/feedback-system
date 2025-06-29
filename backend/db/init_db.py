@@ -1,4 +1,3 @@
-# app/db/init_db.py
 from db.session import engine
 from sqlmodel import SQLModel
 from models.user import User  # import all models

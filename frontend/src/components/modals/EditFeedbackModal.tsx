@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Textarea } from "../ui/textarea";
@@ -25,7 +24,6 @@ const EditFeedbackModal: React.FC<Props> = ({
   const [improvement, setImprovement] = useState("");
   const [sentiment, setSentiment] = useState<"positive" | "neutral" | "negative" | "">("");
 
-//   console.log("EditFeedbackModal feedback:", feedback);
 
   useEffect(() => {
     if (feedback) {

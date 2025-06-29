@@ -1,4 +1,3 @@
-# app/api/routes/users.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from db.session import get_session
@@ -9,8 +8,6 @@ from schemas.user import UserRole, UserTeamResponse
 from utils.deps import get_current_user
 from utils.feedback import get_sentiment_trend
 from typing import List
-
-from collections import Counter
 
 router = APIRouter()
 
@@ -60,7 +57,7 @@ def get_team_members(
             member_id=member.id,
             username=member.username,
             feedback_count=feedback_count,
-            position="Software Developer",  
+            position=member.position or "Not Specified",  
             sentiment_trend=sentiment_trend 
         ))
 

@@ -8,18 +8,17 @@ import ViewFeedbackModal from "../../components/modals/ViewFeedbackModal";
 const API = import.meta.env.VITE_API_URL;
 
 type FeedbackType = {
-  feedback_id: string; // Unique feedback ID
-  employee_id: string; // Optional employee ID
-  employee_name: string; // Employee name
-  employee_email: string; // Optional employee email, can be used for editing or deleting feedback
-  feedback: string; // Feedback text
-  date: string; // Date of feedback
-  status: string; // Status of feedback (e.g., Completed, Pending)
-  // actions?: React.ReactNode; // Optional actions column
-  strengths?: string; // Optional strengths field
-  behavior?: string; // Optional behavior field
-  area_to_improve?: string; // Optional area to improve field
-  feedback_type?: 'positive' | 'negative' | 'neutral'; // Optional feedback type
+  feedback_id: string; 
+  employee_id: string; 
+  employee_name: string;
+  employee_email: string;
+  feedback: string; 
+  date: string; 
+  status: string;
+  strengths?: string;
+  behavior?: string; 
+  area_to_improve?: string; 
+  feedback_type?: 'positive' | 'negative' | 'neutral'; 
 };
 
 const FeedbackHistory = () => {
@@ -51,11 +50,10 @@ const FeedbackHistory = () => {
         );
         const data = response.data;
 
-        // Map the response to the feedbackData structure
         const formattedData = data.map((item: any) => ({
-          feedback_id: item.feedback_id, // Unique feedback ID
-          employee_id: item.employee_id, // Optional, can be used for editing or deleting feedback
-          employee_email: item.employee_email, // Optional, can be used for editing or deleting feedback
+          feedback_id: item.feedback_id, 
+          employee_id: item.employee_id, 
+          employee_email: item.employee_email, 
           employee_name: item.employee_name,
           feedback: item.strengths || "No feedback provided",
           date: new Date(item.submitted_at).toLocaleDateString(),
@@ -63,7 +61,7 @@ const FeedbackHistory = () => {
           strengths: item.strengths || "No strengths provided",
           behavior: item.behavior || "No behavior provided",
           area_to_improve: item.area_to_improve || "No area to improve provided",
-          feedback_type: item.feedback_type || "neutral", // Default to 'neutral' if not
+          feedback_type: item.feedback_type || "neutral", 
         }));
 
         setFeedbacks(formattedData);
@@ -140,14 +138,9 @@ const FeedbackHistory = () => {
                         <button
                           className="text-blue-600 hover:underline text-sm"
                           onClick={() => {
-                            // console.log("View button clicked for item:", item);
                             setSelectedFeedback(item); 
                             setEditModalOpen(true); }
                           }
-                        // onClick={() => {
-                        //   setSelectedFeedback(item);
-                        //   setEditModalOpen(true);
-                        // }}
                         >
                           Edit
                         </button> |
@@ -157,17 +150,12 @@ const FeedbackHistory = () => {
                             setSelectedFeedback(item); 
                             setViewModalOpen(true); }
                           }
-                        // onClick={() => {
-                        //   setSelectedFeedback(item);
-                        //   setViewModalOpen(true);
-                        // }}
                         >
                           View
                         </button>
                       </td>
                     </tr>
                   ))}
-                  {/* {filtered.length === 0 && ( */}
                   {filtered?.length === 0 && (
                     <tr>
                       <td colSpan={5} className="text-center text-gray-500 py-6">
@@ -189,7 +177,7 @@ const FeedbackHistory = () => {
         onClose={() => setEditModalOpen(false)}
         feedback={selectedFeedback}
         token={token!}
-        onUpdated={() => window.location.reload()} // or trigger state refresh
+        onUpdated={() => window.location.reload()}
       />
 
       <ViewFeedbackModal

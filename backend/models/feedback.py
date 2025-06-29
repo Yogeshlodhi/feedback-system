@@ -2,7 +2,6 @@ from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
 from typing import Optional
 from uuid import UUID, uuid4
-from enum import Enum
 from models.user import User
 from schemas.feedback import FeedbackType
 
@@ -22,8 +21,6 @@ class Feedback(SQLModel, table=True):
     
     feedback_type: FeedbackType = Field(default=FeedbackType.NEUTRAL, nullable=False)
     acknowledged: bool = Field(default=False)
-
-    # Relationships
     
     # foreign_keys to resolve ambiguity
     employee: User = Relationship(

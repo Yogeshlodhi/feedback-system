@@ -1,6 +1,3 @@
-// src/routes/ProtectedRoute.tsx
-
-
 import { useContext, type JSX } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';

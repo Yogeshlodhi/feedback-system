@@ -1,19 +1,15 @@
-// src/context/AuthContext.tsx
-
 import React, { createContext, useEffect, useState } from 'react';
 
 interface User {
     email: string;
-    role: 'employee' | 'manager'; // or string if roles can vary
+    role: 'employee' | 'manager';
     username: string;
-    // other fields...
 }
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
-    token: string | null; // Assuming you want to store a token
-    // If you want to store a token, you can add it to the context   
+    token: string | null;
     login: (user: User, token: string) => void;
     logout: () => void;
 }
@@ -23,7 +19,7 @@ export const AuthContext = createContext<AuthContextType>({
     loading: true,
     login: () => { },
     logout: () => { },
-    token: null, // Initialize token as null
+    token: null, 
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
