@@ -12,6 +12,7 @@ from utils.security import hash_password
 from datetime import datetime
 from uuid import uuid4
 import random
+from sqlalchemy import text
 
 router = APIRouter()
 
@@ -101,9 +102,10 @@ improvement_examples = [
 @router.post("/seed/all")
 def seed_all(session: Session = Depends(get_session)):
     # Clear old data (optional, if needed)
-    session.exec("DELETE FROM feedback")
-    session.exec("DELETE FROM team")
-    session.exec("DELETE FROM user")
+    # session.exec("DELETE FROM feedback")
+    session.exec(text("DELETE FROM feedback"))
+    session.exec(text("DELETE FROM team"))
+    session.exec(text("DELETE FROM user"))
     session.commit()
 
     # Insert users
