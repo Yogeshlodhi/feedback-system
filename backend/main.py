@@ -13,7 +13,8 @@ app = FastAPI(
 
 origins = [
     "http://localhost:5173",
-    "https://myfrontend.com",
+    "https://feedback-system-fe.onrender.com",
+    "*"
 ]
 
 app.add_middleware(
