@@ -1,7 +1,8 @@
 # routes/seed.py
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
-from db.init_db import engine, get_session
+from db.init_db import engine
+from db.session import get_session
 from models.user import User
 from models.team import Team
 from models.feedback import Feedback
