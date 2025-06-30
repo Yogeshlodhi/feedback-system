@@ -1,20 +1,8 @@
 import React, { createContext, useEffect, useState } from 'react';
 
-interface User {
-    email: string;
-    role: 'employee' | 'manager';
-    username: string;
-}
+import type { AuthContextTypeProps, User } from '../types/auth';
 
-interface AuthContextType {
-    user: User | null;
-    loading: boolean;
-    token: string | null;
-    login: (user: User, token: string) => void;
-    logout: () => void;
-}
-
-export const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextTypeProps>({
     user: null,
     loading: true,
     login: () => { },

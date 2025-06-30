@@ -1,20 +1,7 @@
-type Feedback = {
-  feedback_id: string;
-  from_manager: string;
-  strengths: string;
-  behavior: string;
-  area_to_improve: string;
-  feedback_type: string;
-  received_on: string;
-};
+import type {AcknowledgeModalProps} from './modal.types';
 
-interface Props {
-  feedback: Feedback;
-  onClose: () => void;
-  onConfirm: () => void;
-}
 
-const AcknowledgeModal = ({ feedback, onClose, onConfirm }: Props) => (
+const AcknowledgeModal = ({ feedback, onClose, onConfirm }: AcknowledgeModalProps) => (
   <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
     <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl space-y-4">
       <h2 className="text-lg font-bold text-gray-800">Acknowledge Feedback</h2>

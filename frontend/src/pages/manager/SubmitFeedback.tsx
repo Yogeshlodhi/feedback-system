@@ -4,11 +4,8 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "sonner";
 
-interface Employee {
-  member_id: string;
-  username: string;
-  email: string;
-}
+import type { Employee } from "../../types/employee"; 
+
 
 const API = import.meta.env.VITE_API_URL;
 

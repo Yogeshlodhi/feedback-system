@@ -3,12 +3,7 @@ import Layout from "../../components/Layout";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-type TeamMember = {
-  username: string;
-  position: string;
-  feedback_count: number;
-  sentiment_trend: "Positive" | "Neutral" | "Negative";
-};
+import type { TeamMember } from "../../types/employee"; 
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -22,8 +17,6 @@ const Team = () => {
   const [search, setSearch] = useState("");
   const [team, setTeam] = useState<TeamMember[]>();
   const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
-
 
   const { token } = useContext(AuthContext);
   
@@ -31,8 +24,6 @@ const Team = () => {
     if (!token) return;
 
     setLoading(true);
-    // setError(null);
-
 
     const fetchTeamData = async () => {
       // const response = await new Promise<TeamMember[]>((resolve) => {

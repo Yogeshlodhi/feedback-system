@@ -5,14 +5,19 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { Eye, EyeOff } from 'lucide-react';
+
+
 const API = import.meta.env.VITE_API_URL;
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); 
-  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const { login } = useContext(AuthContext);
 
@@ -69,7 +74,7 @@ const LoginPage: React.FC = () => {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
 
-        <CredentialsCard/>
+        <CredentialsCard />
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -86,19 +91,28 @@ const LoginPage: React.FC = () => {
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
-              className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 pr-10"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              // type="password"
+              // className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 focus:outline-none"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
           </div>
 
           {error && (

@@ -4,15 +4,7 @@ import Layout from "../../components/Layout";
 import FeedbackCard from "../../components/FeedbackCard";
 import AcknowledgeModal from "../../components/modals/AcknowledgeModal";
 
-type Feedback = {
-  feedback_id: string;
-  from_manager: string;
-  strengths: string;
-  behavior: string;
-  area_to_improve: string;
-  feedback_type: string;
-  received_on: string;
-};
+import type {MyFeedbackType as Feedback} from '../../types/feedback';
 
 const API = import.meta.env.VITE_API_URL;
 

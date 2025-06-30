@@ -2,16 +2,10 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
+import type { Role, Position } from '../../types/auth';
 
 const API = import.meta.env.VITE_API_URL;
-
-type Role = 'employee' | 'manager';
-type Position =
-    | 'Software Developer'
-    | 'Data Analyst'
-    | 'QA Engineer'
-    | 'Designer'
-    | 'Manager';
 
 const positions: Position[] = [
     'Software Developer',
@@ -29,6 +23,7 @@ const SignUpPage: React.FC = () => {
     const [position, setPosition] = useState<Position | ''>('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -149,18 +144,28 @@ const SignUpPage: React.FC = () => {
                     </div>
 
                     {/* Password */}
-                    <div className="mb-6">
+                    <div className="mb-6 relative">
                         <label className="block text-gray-700 text-sm font-semibold mb-2">
                             Password
                         </label>
                         <input
-                            type="password"
-                            className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            className="shadow-sm appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 pr-10"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            // type="password"
+                            // className="shadow-sm border rounded-md w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 focus:outline-none"
+                        >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
                     </div>
 
                     {error && (
@@ -171,8 +176,8 @@ const SignUpPage: React.FC = () => {
                         type="submit"
                         disabled={loading}
                         className={`w-full py-2 px-4 rounded-md text-white font-semibold transition duration-200 ${loading
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-blue-600 hover:bg-blue-700'
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-blue-600 hover:bg-blue-700'
                             }`}
                     >
                         {loading ? 'Creating...' : 'Signup'}

@@ -5,21 +5,10 @@ import { AuthContext } from "../../context/AuthContext";
 import EditFeedbackModal from "../../components/modals/EditFeedbackModal";
 import ViewFeedbackModal from "../../components/modals/ViewFeedbackModal";
 
+import type { FeedbackHistoryType as FeedbackType } from "../../types/feedback"; 
+
 const API = import.meta.env.VITE_API_URL;
 
-type FeedbackType = {
-  feedback_id: string; 
-  employee_id: string; 
-  employee_name: string;
-  employee_email: string;
-  feedback: string; 
-  date: string; 
-  status: string;
-  strengths?: string;
-  behavior?: string; 
-  area_to_improve?: string; 
-  feedback_type?: 'positive' | 'negative' | 'neutral'; 
-};
 
 const FeedbackHistory = () => {
   const [search, setSearch] = useState("");
@@ -27,7 +16,6 @@ const FeedbackHistory = () => {
   const [feedbacks, setFeedbacks] = useState<FeedbackType[]>();
 
   const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
 
   const { token } = useContext(AuthContext);
 

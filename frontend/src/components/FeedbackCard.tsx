@@ -1,23 +1,8 @@
 import clsx from "clsx";
 
-type Feedback = {
-    feedback_id: string;
-    from_manager: string;
-    strengths: string;
-    behavior: string;
-    area_to_improve: string;
-    feedback_type: string;
-    received_on: string;
-    acknowledged?: boolean; // Optional, if you want to track acknowledgment
-};
+import type { FeedbackCardProps } from "../types/feedback";
 
-interface Props {
-    from: string;
-    feedback: Feedback;
-    onAcknowledge: () => void;
-}
-
-const FeedbackCard = ({ from, feedback, onAcknowledge }: Props) => (
+const FeedbackCard = ({ from, feedback, onAcknowledge }: FeedbackCardProps) => (
     <div className="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-lg transition duration-200 space-y-3">
         <p className="text-sm text-gray-500"><strong>From:</strong> {from}</p>
         <p className="text-sm text-gray-700"><strong>Strengths:</strong> {feedback.strengths}</p>

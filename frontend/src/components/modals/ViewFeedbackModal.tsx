@@ -1,12 +1,8 @@
 import React from "react";
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  feedback: any;
-}
+import type { ViewFeedbackModalProps } from "./modal.types";
 
-const ViewFeedbackModal: React.FC<Props> = ({ isOpen, onClose, feedback }) => {
+const ViewFeedbackModal: React.FC<ViewFeedbackModalProps> = ({ isOpen, onClose, feedback }) => {
   if (!isOpen || !feedback) return null;
 
   return (

@@ -2,10 +2,12 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Sidebar from './Sidebar';
 import { useNavigate } from 'react-router-dom';
+import { Menu } from 'lucide-react'; 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
@@ -27,17 +29,45 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex w-full h-screen overflow-hidden">
-      {/* Sidebar */}
-      <div className="w-64 flex-shrink-0">
+    <div className="flex h-screen w-full overflow-hidden relative">
+      {/* Sidebar for Desktop */}
+      <div className="hidden md:block w-64 flex-shrink-0">
         <Sidebar />
       </div>
 
-      {/* Right Section (Header + Scrollable Main) */}
+      {/* Sidebar Drawer for Mobile */}
+
+      <div className={`fixed inset-0 z-50 flex transition-all duration-300 ${sidebarOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+        {/* Slide-in Sidebar */}
+        <div
+          className={`w-64 bg-white shadow-lg transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+        >
+          <Sidebar closeSidebar={() => setSidebarOpen(false)} />
+        </div>
+
+        {/* Backdrop */}
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className={`flex-1 backdrop-blur-sm bg-transparent bg-opacity-20 transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+        ></div>
+      </div>
+
+      {/* Right Section */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
-        <header className="h-20 flex-shrink-0 bg-white flex items-center justify-between px-6 border-b">
-          <h1 className="text-xl font-semibold"></h1>
+        <header className="h-20 flex-shrink-0 bg-white flex items-center justify-between px-4 md:px-6 border-b">
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden"
+            onClick={() => setSidebarOpen(true)}
+            title="Open sidebar menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+
+          <h1 className="text-xl font-semibold hidden md:block"></h1>
 
           <div className="relative" ref={dropdownRef}>
             <button
@@ -68,7 +98,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </header>
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
           {children}
         </main>
       </div>
