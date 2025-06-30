@@ -4,6 +4,32 @@ A full-stack, dockerized web application to facilitate structured feedback shari
 
 ---
 
+## The Website is Live :
+- [The Feedback System](https://feedback-system-fe.onrender.com)
+
+# Use the following credentials : 
+ - Manager :
+ ```bash
+ email : yogeshlodhi1208@gmail.com
+ password : yogesh123
+ username : Yogesh Lodhi
+ ```
+
+ - Employee :
+ ```bash
+ email : yogeshkumar051202@gmail.com
+ password : yogesh123
+ username : Yogesh Kumar
+ ```
+
+ - Any Other User :
+    - You can login to any other user you find in the application using :
+    ```bash
+    email : firstname.lastname@gmail.com (virat.kohli@gmail.com)
+    password : firstname123 (virat123)
+    ```
+
+
 ## 📌 Features
 
 - 👥 **Role-based access** for Managers and Employees
@@ -44,31 +70,35 @@ A full-stack, dockerized web application to facilitate structured feedback shari
 
 ## 🧠 Project Architecture
 
-feedback-system/
-│
-├── backend/
-│ 
-│ ├── migrations/ # DB migrations
-│ ├── models/ # SQLModel definitions (User, Team, Feedback)
-│ ├── routes/ # API routes (auth, feedback, team)
-│ ├── schemas/ # Structured Classes
-│ ├── utils/ # Utility Functions
-│ ├── main.py # FastAPI app
-│ ├── Dockerfile
-│ └── requirements.txt
-│
-├── frontend/
-│ ├── src/
-│ │ ├── components/ # Forms, Cards, Modals
-│ │ ├── pages/ # Login, Dashboard, Feedback Form
-│ │ ├── context/ # AuthContext
-│ │ └── App.tsx
-│ ├── public/
-│ ├── Dockerfile
-│ └── vite.config.ts
-│
-├── docker-compose.yml
-└── README.md
+    feedback-system/
+    │
+    ├── backend/
+    │ 
+    │ ├── db/ # DB Initialization/Setup
+    │ ├── migrations/ # DB migrations
+    │ ├── models/ # SQLModel definitions (User, Team, Feedback)
+    │ ├── routes/ # API routes (auth, feedback, team)
+    │ ├── schemas/ # Structured Classes
+    │ ├── utils/ # Utility Functions
+    │ ├── main.py # FastAPI app
+    │ ├── Dockerfile
+    │ └── requirements.txt
+    │
+    ├── frontend/
+    │ ├── src/
+    │ │ ├── components/ # Sidebar, Re-Usable Components, Modals
+    │ │ ├── pages/ 
+    │ │ | ├── auth/ # Login, Signup Page
+    │ │ | ├── employee/ # Employee Routes
+    │ │ | ├── manager/ # Manager Routes
+    │ │ ├── context/ # AuthContext
+    │ │ └── App.tsx
+    │ ├── public/
+    │ ├── Dockerfile
+    │ └── vite.config.ts
+    │
+    ├── docker-compose.yml
+    └── README.md
 
 ---
 
@@ -82,113 +112,116 @@ cd feedback-system
 ```
 
 ### 2. Setup environment variables
-Create .env files in both backend/ and frontend/ directories:
+
+#### a. Create .env files in both backend/ and frontend/ directories: 
 
     - backend/.env
     - frontend/.env
 
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/feedback_db
-JWT_SECRET_KEY=your_super_secret
+#### b. Create your own local postres db credentials and use them or Use a cloud based postgres db: 
 
-frontend/.env
-env
-
-VITE_API_URL=http://localhost:8000
+```bash
+DB_HOST=""
+DB_PORT=""
+DB_USER=""
+DB_PASSWORD=""
+DB_NAME=""
+```
+#### a. Use either localhost or your deployed backend URL: 
+```bash
+    VITE_API_URL=http://localhost:8000/api
+    VITE_API_URL=https://deployed_backend/api
+```
 
 # 🐳 Run with Docker
-### Step 1: Build and start the services
+### Step 1: Change the docker-compose.example.yml to docker-compose.yml
+### Step 2: Update credentials according to your uses
+
+### Step 3: Build and start the services
 
 ```bash
 docker-compose up --build
 ```
 
-### Step 2: Open the app
-Frontend: http://localhost:5173
-Backend: http://localhost:8000/docs
+<!-- ### Live URLs
+- [Admin Panel](https://adminpanel-zvp2.onrender.com/login) 
+- [Students Portal](https://studentspanel.onrender.com/login) -->
 
-<!-- 🧪 Run Seed Data (optional)
+### Step 4: Open the app
+- [Frontend](http://localhost:5173) 
+- [Backend](http://localhost:8000/docs)
+
+# 🧪 Run Seed Data (optional)
 Populate your database with mock data:
 
-bash
-Copy
-Edit -->
-<!-- 
-# Inside backend container
+## Inside backend container
+```bash
 docker exec -it feedback-backend bash
-cd app/seed
-python seed_all.py
-This seeds:
+python seed_users.py
+python seed_teams.py
+python seed_feedback.py
+```
 
-Users (employees & managers)
+## This seeds:
 
-Teams (random manager-employee links)
+- Users (employees & managers)
 
-Feedbacks (randomized for each team)
+- Teams (random manager-employee links)
 
-🧰 Useful Scripts
-Run Alembic migrations
-bash
-Copy
-Edit
-alembic revision --autogenerate -m "create tables"
-alembic upgrade head
-Format code (backend)
-bash
-Copy
-Edit
-black app/
-🧑‍💻 Development Setup (Without Docker)
-Backend
-bash
-Copy
-Edit
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-Frontend
-bash
-Copy
-Edit
-cd frontend
-npm install
-npm run dev
-🌐 Deployment Options
-Frontend (React):
+- Feedbacks (randomized for each team)
 
-Vercel or Netlify (vite.config.ts must allow correct base path)
+# 🧰 Useful Scripts
 
-Backend (FastAPI):
+- Run Alembic migrations
+```bash
+    alembic revision --autogenerate -m "create tables"
+    alembic upgrade head
+```
 
-Render, Railway, or Fly.io
+- Format code (backend)
 
-PostgreSQL:
+    ###### 🧑‍💻 Development Setup (Without Docker)
+    - Backend
+    ```bash
+        cd backend
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        uvicorn app.main:app --reload
+    ```
+    - Frontend
+    ```bash
+        cd frontend
+        npm install
+        npm run dev
+    ```
 
-Supabase or Render PostgreSQL
+    - 🌐 Deployment Options
 
-Make sure to update CORS settings and .env accordingly
+        ###### Frontend (React):
+        - Vercel or Netlify (vite.config.ts must allow correct base path)
 
-✅ To-Do (Optional Enhancements)
- Add notifications/toasts for feedback actions
+        ###### Backend (FastAPI):
+        - Render, Railway, or Fly.io
 
- Email alerts for submitted feedback
+        ###### PostgreSQL:
 
- Feedback acknowledgment feature
+        - Supabase / Render PostgreSQL / NeonDB
+        - Make sure to update CORS settings and .env accordingly
 
- Analytics for managers
 
- User avatars
+## ✅ To-Do (Optional Enhancements)
+ - Add notifications/toasts for feedback actions
 
-🙌 Acknowledgements
-FastAPI team for the blazing-fast backend framework
+ - Email alerts for submitted feedback
 
-SQLModel & Alembic for smooth ORM and migrations
+ - Analytics for managers
 
-React + Tailwind + Shadcn for rapid UI development
 
-Docker for enabling reproducible environments
 
-🧑‍💼 Author
-Yogesh Kumar
-GitHub · LinkedIn -->
+# 🧑‍💼 Author
+## Yogesh Kumar
+
+- [Github](https://github.com/Yogeshlodhi) 
+- [LinkedIn](https://www.linkedin.com/in/yogesh-kumar-4346a1226/)
+- [Portfolio](https://new-portfolio-flame-nine-65.vercel.app/) 

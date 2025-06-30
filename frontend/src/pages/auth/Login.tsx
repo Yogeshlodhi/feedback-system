@@ -1,3 +1,4 @@
+import CredentialsCard from '../../components/CredentialsCard';
 import { AuthContext } from '../../context/AuthContext';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
@@ -67,6 +68,8 @@ const LoginPage: React.FC = () => {
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h1>
+
+        <CredentialsCard/>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
